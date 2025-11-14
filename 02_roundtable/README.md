@@ -48,14 +48,19 @@ GEMINI_API_KEY=AIza...
 ## 💬 Conversation Logic
 
 Each agent responds in sequence:
+
 **Athena** analyzes the full conversation and identifies assumptions, constraints, and risks.
+
 **Blaze** follows up with actionable strategies, practical tests, and next steps.
+
 **Cypher** critiques and probes the reasoning, identifying gaps and suggesting validations.
+
 This round repeats several times, maintaining the shared context through a growing transcript list.
 
 ## 🧠 Example Discussion (Excerpt)
 ```txt
 Blaze: Hello Athena, how are you today?
+
 Cypher: Hi Athena, I was wondering if you could help me with a creative project I'm working on.
 
 Athena: 1. Assumptions:
@@ -82,4 +87,5 @@ Each new round deepens the reasoning chain as the agents debate validation strat
 
 ## 🏁 Author
 Khashayar Bayati, Ph.D.
+
 GitHub: github.com/Khashayarbayati1
