@@ -64,11 +64,16 @@ Updates (or inserts) the ticket price and returns a confirmation message.
 A simple tool-calling loop handles model-initiated function calls, executes Python functions, and feeds results back into the conversation.
 
 ## 💬 Example Interaction
+
 ```txt
-Hi there!
-How much is a flight to London?
-What about Berlin?
-Update the flight price for Berlin to $599.
+User: How much is a flight to London?
+Assistant: A flight to London costs $799.
+
+User: what about Berlin?
+Assistant: I'm sorry, but I don't have the ticket price information for Berlin.
+
+User: Update the flight price for Berlin to $599.
+Assistant: The flight price for Berlin has been successfully updated to $599.
 ```
 
 ## 🧠 Insights Gained
