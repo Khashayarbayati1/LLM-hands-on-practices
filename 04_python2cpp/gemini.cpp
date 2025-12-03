@@ -3,42 +3,45 @@
 #include <iomanip>
 #include <chrono>
 
-// Calculates the series using an algebraically simplified, faster formula.
-// The original loop body is: result += (1.0 / (i * p1 + p2)) - (1.0 / (i * p1 - p2));
-// This simplifies to: result += -2.0 * p2 / ((i * p1)^2 - p2^2);
-// This transformation reduces two expensive divisions to one per iteration.
-double calculate(const long long iterations, const double param1, const double param2) {
+// The calculate function mirrors the Python logic.
+// Using double ensures precision matches Python's float (which is C++ double).
+// Passing param1 and param2 as doubles avoids repeated integer-to-float conversions in the loop.
+// Clang's -Ofast -mcpu=native will automatically vectorize this loop using NEON instructions on Apple Silicon.
+double calculate(int iterations, double param1, double param2) {
     double result = 1.0;
     
-    const double p1_sq = param1 * param1;
-    const double p2_sq = param2 * param2;
-    const double term_numerator = -2.0 * param2;
-
-    for (long long i = 1; i <= iterations; ++i) {
-        const double i_d = static_cast<double>(i);
-        result += term_numerator / (p1_sq * i_d * i_d - p2_sq);
+    // Iterate from 1 to iterations inclusive, exactly as range(1, iterations+1)
+    // The compiler can unroll and pipeline this loop effectively.
+    for (int i = 1; i <= iterations; ++i) {
+        double j1 = i * param1 - param2;
+        result -= (1.0 / j1);
+        
+        double j2 = i * param1 + param2;
+        result += (1.0 / j2);
     }
     return result;
 }
 
 int main() {
-    std::ios_base::sync_with_stdio(false);
+    // Start high-resolution timer
+    auto start_time = std::chrono::high_resolution_clock::now();
 
-    const long long iterations = 100'000'000;
-    const double param1 = 4.0;
-    const double param2 = 1.0;
+    // Execute the calculation
+    // 100_000_000 iterations, params 4 and 1
+    double result = calculate(100000000, 4.0, 1.0) * 4.0;
 
-    const auto start_time = std::chrono::high_resolution_clock::now();
+    // Stop timer
+    auto end_time = std::chrono::high_resolution_clock::now();
+    
+    // Calculate elapsed time in seconds
+    std::chrono::duration<double> duration = end_time - start_time;
 
-    const double result = calculate(iterations, param1, param2) * 4.0;
-
-    const auto end_time = std::chrono::high_resolution_clock::now();
-    const std::chrono::duration<double> elapsed = end_time - start_time;
-
+    // Output formatted results
     std::cout << std::fixed << std::setprecision(12);
-    std::cout << "Result: " << result << '\n';
-    std::cout << std::setprecision(6);
-    std::cout << "Execution Time: " << elapsed.count() << " seconds\n";
+    std::cout << "Result: " << result << "\n";
+    
+    std::cout << std::fixed << std::setprecision(6);
+    std::cout << "Execution Time: " << duration.count() << " seconds" << "\n";
 
     return 0;
 }

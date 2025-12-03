@@ -10,28 +10,43 @@ int main() {
 
     auto start_time = std::chrono::high_resolution_clock::now();
 
-    double result0 = 0.0, result1 = 0.0, result2 = 0.0, result3 = 0.0;
-    
-    long long i;
-    for (i = 1; i <= iterations - 3; i += 4) {
-        double d0 = i * param1;
-        double d1 = (i + 1) * param1;
-        double d2 = (i + 2) * param1;
-        double d3 = (i + 3) * param1;
-        
-        result0 += 1.0 / (d0 + param2) - 1.0 / (d0 - param2);
-        result1 += 1.0 / (d1 + param2) - 1.0 / (d1 - param2);
-        result2 += 1.0 / (d2 + param2) - 1.0 / (d2 - param2);
-        result3 += 1.0 / (d3 + param2) - 1.0 / (d3 - param2);
+    double result0 = 0.0;
+    double result1 = 0.0;
+    double result2 = 0.0;
+    double result3 = 0.0;
+
+    long long i = 1;
+    for (; i + 3 <= iterations; i += 4) {
+        double d0 = static_cast<double>(i);
+        double d1 = static_cast<double>(i + 1);
+        double d2 = static_cast<double>(i + 2);
+        double d3 = static_cast<double>(i + 3);
+
+        double j0a = d0 * param1 - param2;
+        double j0b = d0 * param1 + param2;
+        double j1a = d1 * param1 - param2;
+        double j1b = d1 * param1 + param2;
+        double j2a = d2 * param1 - param2;
+        double j2b = d2 * param1 + param2;
+        double j3a = d3 * param1 - param2;
+        double j3b = d3 * param1 + param2;
+
+        result0 += (1.0 / j0b - 1.0 / j0a);
+        result1 += (1.0 / j1b - 1.0 / j1a);
+        result2 += (1.0 / j2b - 1.0 / j2a);
+        result3 += (1.0 / j3b - 1.0 / j3a);
     }
-    
+
     double result = 1.0 + result0 + result1 + result2 + result3;
-    
+
     for (; i <= iterations; ++i) {
-        double d = i * param1;
-        result += 1.0 / (d + param2) - 1.0 / (d - param2);
+        double d = static_cast<double>(i);
+        double ja = d * param1 - param2;
+        double jb = d * param1 + param2;
+        result -= 1.0 / ja;
+        result += 1.0 / jb;
     }
-    
+
     result *= 4.0;
 
     auto end_time = std::chrono::high_resolution_clock::now();

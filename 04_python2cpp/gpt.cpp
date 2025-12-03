@@ -3,32 +3,88 @@
 #include <chrono>
 #include <cstdint>
 
-static inline double calculate(int64_t iterations, int64_t param1, int64_t param2) {
+static inline double calculate(std::int64_t iterations, std::int64_t param1, std::int64_t param2) {
+    const double c1 = static_cast<double>(param1);
+    const double c2 = static_cast<double>(param2);
     double result = 1.0;
-    for (int64_t i = 1; i <= iterations; ++i) {
-        double j = static_cast<double>(i) * static_cast<double>(param1) - static_cast<double>(param2);
-        result -= 1.0 / j;
-        j = static_cast<double>(i) * static_cast<double>(param1) + static_cast<double>(param2);
-        result += 1.0 / j;
+
+    std::int64_t i = 1;
+    const std::int64_t block = 8;
+
+    // Unrolled loop for performance
+    for (; i + block - 1 <= iterations; i += block) {
+        double base = c1 * static_cast<double>(i);
+
+        // 1
+        double j1 = base - c2;
+        double j2 = base + c2;
+        result += (-1.0 / j1) + (1.0 / j2);
+        base += c1;
+
+        // 2
+        j1 = base - c2;
+        j2 = base + c2;
+        result += (-1.0 / j1) + (1.0 / j2);
+        base += c1;
+
+        // 3
+        j1 = base - c2;
+        j2 = base + c2;
+        result += (-1.0 / j1) + (1.0 / j2);
+        base += c1;
+
+        // 4
+        j1 = base - c2;
+        j2 = base + c2;
+        result += (-1.0 / j1) + (1.0 / j2);
+        base += c1;
+
+        // 5
+        j1 = base - c2;
+        j2 = base + c2;
+        result += (-1.0 / j1) + (1.0 / j2);
+        base += c1;
+
+        // 6
+        j1 = base - c2;
+        j2 = base + c2;
+        result += (-1.0 / j1) + (1.0 / j2);
+        base += c1;
+
+        // 7
+        j1 = base - c2;
+        j2 = base + c2;
+        result += (-1.0 / j1) + (1.0 / j2);
+        base += c1;
+
+        // 8
+        j1 = base - c2;
+        j2 = base + c2;
+        result += (-1.0 / j1) + (1.0 / j2);
     }
+
+    // Remainder loop
+    for (; i <= iterations; ++i) {
+        double base = c1 * static_cast<double>(i);
+        result += (-1.0 / (base - c2)) + (1.0 / (base + c2));
+    }
+
     return result;
 }
 
 int main() {
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie(nullptr);
+    const std::int64_t iterations = 100000000;
+    const std::int64_t param1 = 4;
+    const std::int64_t param2 = 1;
 
-    const int64_t iterations = 100000000;
-    const int64_t param1 = 4;
-    const int64_t param2 = 1;
-
-    auto start_time = std::chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     double result = calculate(iterations, param1, param2) * 4.0;
-    auto end_time = std::chrono::high_resolution_clock::now();
+    auto end = std::chrono::high_resolution_clock::now();
 
-    std::chrono::duration<double> elapsed = end_time - start_time;
+    std::chrono::duration<double> elapsed = end - start;
 
-    std::cout << "Result: " << std::fixed << std::setprecision(12) << result << "\n";
-    std::cout << "Execution Time: " << std::fixed << std::setprecision(6) << elapsed.count() << " seconds\n";
+    std::cout.setf(std::ios::fixed);
+    std::cout << std::setprecision(12) << "Result: " << result << '\n';
+    std::cout << std::setprecision(6) << "Execution Time: " << elapsed.count() << " seconds\n";
     return 0;
 }
